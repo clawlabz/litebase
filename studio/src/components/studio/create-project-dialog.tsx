@@ -236,7 +236,7 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
               />
               <ConnectionField
                 label="Database"
-                value={`postgresql://postgres:postgres@localhost:5432/${createdProject.db_name}`}
+                value={`postgresql://postgres:postgres@localhost:5432/${createdProject.database_name}`}
                 copied={copiedField === "db"}
                 onCopy={(v) => handleCopy("db", v)}
                 truncate

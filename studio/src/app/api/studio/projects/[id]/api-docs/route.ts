@@ -39,12 +39,12 @@ export async function GET(
     const { id } = await params;
 
     const project = await queryOne<{
-      db_name: string;
+      database_name: string;
       anon_key: string;
       service_role_key: string;
       postgrest_port: number;
     }>(
-      "SELECT db_name, anon_key, service_role_key, postgrest_port FROM projects WHERE id = $1",
+      "SELECT database_name, anon_key, service_role_key, postgrest_port FROM projects WHERE id = $1",
       [id],
     );
 
@@ -59,7 +59,7 @@ export async function GET(
     const tablesResult = await queryProjectDb<{
       table_name: string;
     }>(
-      project.db_name,
+      project.database_name,
       `SELECT table_name
        FROM information_schema.tables
        WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
@@ -75,7 +75,7 @@ export async function GET(
       is_nullable: string;
       column_default: string | null;
     }>(
-      project.db_name,
+      project.database_name,
       `SELECT
         c.table_name,
         c.column_name,
@@ -93,7 +93,7 @@ export async function GET(
       table_name: string;
       column_name: string;
     }>(
-      project.db_name,
+      project.database_name,
       `SELECT
         kcu.table_name,
         kcu.column_name
@@ -110,7 +110,7 @@ export async function GET(
       table_name: string;
       description: string;
     }>(
-      project.db_name,
+      project.database_name,
       `SELECT
         c.relname AS table_name,
         obj_description(c.oid) AS description

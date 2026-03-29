@@ -50,7 +50,7 @@ export async function GET(
     let dbSize = "0 bytes";
 
     try {
-      const pool = createProjectPool(project.db_name);
+      const pool = createProjectPool(project.database_name);
       try {
         const tables = await pool.query(
           "SELECT COUNT(*)::int AS cnt FROM information_schema.tables WHERE table_schema = 'public'",
@@ -194,9 +194,9 @@ export async function DELETE(
         `SELECT pg_terminate_backend(pid)
          FROM pg_stat_activity
          WHERE datname = $1 AND pid <> pg_backend_pid()`,
-        [project.db_name],
+        [project.database_name],
       );
-      await metaPool.query(`DROP DATABASE IF EXISTS "${project.db_name}"`);
+      await metaPool.query(`DROP DATABASE IF EXISTS "${project.database_name}"`);
     } catch {
       // Continue even if drop fails
     }

@@ -13,7 +13,6 @@ import {
   Database,
   LogOut,
   LayoutDashboard,
-  Key,
   Mail,
 } from "lucide-react";
 import {
@@ -52,7 +51,6 @@ const TOOL_NAV = [
 ] as const;
 
 const SETTINGS_NAV = [
-  { title: "API Keys", href: "/api-keys", icon: Key },
   { title: "Settings", href: "/settings", icon: Settings },
 ] as const;
 

@@ -45,8 +45,8 @@ export async function GET(
     const pgPassword = process.env.PG_PASSWORD ?? "postgres";
 
     const connections: ConnectionInfo = {
-      direct_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:${pgPort}/${project.db_name}`,
-      pooled_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:6432/${project.db_name}`,
+      direct_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:${pgPort}/${project.database_name}`,
+      pooled_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:6432/${project.database_name}`,
       api_url: `http://localhost:${project.postgrest_port}`,
       auth_url: `http://localhost:${project.gotrue_port}`,
       anon_key: project.anon_key,

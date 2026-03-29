@@ -7,18 +7,18 @@ import { safeIdentifier, isSafeIdentifier } from "@/lib/sql-utils";
 import type { ApiResponse, TableInfo, CreateTableRequest } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
-// Helper: resolve project db_name
+// Helper: resolve project database_name
 // ---------------------------------------------------------------------------
 
 async function getDbName(projectId: string): Promise<string> {
-  const project = await queryOne<{ db_name: string }>(
-    "SELECT db_name FROM projects WHERE id = $1",
+  const project = await queryOne<{ database_name: string }>(
+    "SELECT database_name FROM projects WHERE id = $1",
     [projectId],
   );
   if (!project) {
     throw new Error("Project not found");
   }
-  return project.db_name;
+  return project.database_name;
 }
 
 // ---------------------------------------------------------------------------

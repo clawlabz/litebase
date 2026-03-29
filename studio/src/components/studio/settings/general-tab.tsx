@@ -121,7 +121,7 @@ export function GeneralTab({ project, onRefetch }: GeneralTabProps) {
               <p className="text-xs font-medium text-muted-foreground">
                 Database Name
               </p>
-              <p className="text-sm font-mono">{project.db_name}</p>
+              <p className="text-sm font-mono">{project.database_name}</p>
             </div>
             <div className="space-y-1">
               <p className="text-xs font-medium text-muted-foreground">

@@ -11,14 +11,14 @@ import type { ApiResponse, PaginatedRows } from "@/lib/types";
 // ---------------------------------------------------------------------------
 
 async function getDbName(projectId: string): Promise<string> {
-  const project = await queryOne<{ db_name: string }>(
-    "SELECT db_name FROM projects WHERE id = $1",
+  const project = await queryOne<{ database_name: string }>(
+    "SELECT database_name FROM projects WHERE id = $1",
     [projectId],
   );
   if (!project) {
     throw new Error("Project not found");
   }
-  return project.db_name;
+  return project.database_name;
 }
 
 // ---------------------------------------------------------------------------

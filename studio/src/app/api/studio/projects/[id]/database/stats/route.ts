@@ -40,8 +40,8 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const project = await queryOne<{ db_name: string }>(
-      "SELECT db_name FROM projects WHERE id = $1",
+    const project = await queryOne<{ database_name: string }>(
+      "SELECT database_name FROM projects WHERE id = $1",
       [id],
     );
 
@@ -52,7 +52,7 @@ export async function GET(
       );
     }
 
-    const dbName = project.db_name;
+    const dbName = project.database_name;
 
     // Total database size
     const sizeResult = await queryProjectDb<{

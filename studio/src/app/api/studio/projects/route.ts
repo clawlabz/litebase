@@ -124,7 +124,7 @@ export async function POST(request: Request) {
     // 7. Insert project record
     const result = await queryOne<Project>(
       `INSERT INTO projects (
-        name, display_name, db_name, jwt_secret,
+        name, display_name, database_name, jwt_secret,
         anon_key, service_role_key,
         gotrue_container_id, postgrest_container_id,
         gotrue_port, postgrest_port,
@@ -186,7 +186,7 @@ export async function GET() {
         let dbSize = "0 bytes";
 
         try {
-          const pool = createProjectPool(project.db_name);
+          const pool = createProjectPool(project.database_name);
           try {
             const tables = await pool.query(
               "SELECT COUNT(*)::int AS cnt FROM information_schema.tables WHERE table_schema = 'public'",

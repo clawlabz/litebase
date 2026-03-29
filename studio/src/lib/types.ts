@@ -8,7 +8,7 @@ export interface Project {
   readonly id: string;
   readonly name: string;
   readonly display_name: string;
-  readonly db_name: string;
+  readonly database_name: string;
   readonly jwt_secret: string;
   readonly anon_key: string;
   readonly service_role_key: string;

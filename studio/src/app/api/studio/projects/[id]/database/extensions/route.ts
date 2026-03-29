@@ -40,8 +40,8 @@ export async function POST(
   try {
     const { id } = await params;
 
-    const project = await queryOne<{ db_name: string }>(
-      "SELECT db_name FROM projects WHERE id = $1",
+    const project = await queryOne<{ database_name: string }>(
+      "SELECT database_name FROM projects WHERE id = $1",
       [id],
     );
 
@@ -85,12 +85,12 @@ export async function POST(
 
     if (body.action === "enable") {
       await queryProjectDb(
-        project.db_name,
+        project.database_name,
         `CREATE EXTENSION IF NOT EXISTS ${quotedName}`,
       );
     } else {
       await queryProjectDb(
-        project.db_name,
+        project.database_name,
         `DROP EXTENSION IF EXISTS ${quotedName}`,
       );
     }

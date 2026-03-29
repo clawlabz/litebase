@@ -28,18 +28,18 @@ export function safeIdentifier(name: string): string {
 }
 
 /**
- * Look up a project's db_name by project ID from the meta database.
+ * Look up a project's database_name by project ID from the meta database.
  */
 export async function getProjectDbName(
   projectId: string,
-  queryOneFn: (sql: string, values?: readonly unknown[]) => Promise<{ db_name: string } | null>,
+  queryOneFn: (sql: string, values?: readonly unknown[]) => Promise<{ database_name: string } | null>,
 ): Promise<string> {
   const project = await queryOneFn(
-    "SELECT db_name FROM projects WHERE id = $1",
+    "SELECT database_name FROM projects WHERE id = $1",
     [projectId],
   );
   if (!project) {
     throw new Error("Project not found");
   }
-  return project.db_name;
+  return project.database_name;
 }

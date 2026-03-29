@@ -409,7 +409,7 @@ export default function ProjectDetailPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <CopyField
               label="Database (Direct)"
-              value={`postgresql://postgres:postgres@${pgHost}:${pgPort}/${project.db_name}`}
+              value={`postgresql://postgres:postgres@${pgHost}:${pgPort}/${project.database_name}`}
             />
             <CopyField label="JWT Secret" value={project.jwt_secret} />
           </div>

@@ -70,7 +70,7 @@ export async function POST(
     }
 
     // Execute query against the project database
-    const pool = createProjectPool(project.db_name);
+    const pool = createProjectPool(project.database_name);
     try {
       const result = await pool.query(sqlText);
       const durationMs = Math.round(performance.now() - startTime);
