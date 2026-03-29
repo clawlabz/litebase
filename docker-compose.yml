@@ -1,0 +1,81 @@
+services:
+  # ─── PostgreSQL 17 ─────────────────────────────────────────────────────
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PG_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-litebase}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-litebase_meta}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-litebase}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─── PgBouncer (Connection Pooler) ─────────────────────────────────────
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: unless-stopped
+    ports:
+      - "${PGBOUNCER_PORT:-6432}:6432"
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-litebase}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-litebase_meta}
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+      MIN_POOL_SIZE: 5
+      RESERVE_POOL_SIZE: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ─── LiteBase Studio (Admin Panel) ─────────────────────────────────────
+  studio:
+    build:
+      context: ./studio
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${STUDIO_PORT:-3000}:3000"
+    environment:
+      # Database
+      DATABASE_URL: postgres://${POSTGRES_USER:-litebase}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-litebase_meta}
+      DIRECT_DATABASE_URL: postgres://${POSTGRES_USER:-litebase}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-litebase_meta}
+      PG_HOST: postgres
+      PG_PORT: 5432
+      PG_USER: ${POSTGRES_USER:-litebase}
+      PG_PASSWORD: ${POSTGRES_PASSWORD}
+      # Auth
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      STUDIO_PASSWORD: ${STUDIO_PASSWORD:?Set STUDIO_PASSWORD in .env}
+      # SMTP
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@localhost}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-LiteBase}
+      # Docker socket for managing project containers
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - project_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pg_data:
+    driver: local
+  project_data:
+    driver: local
+
+networks:
+  default:
+    name: litebase
