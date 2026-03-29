@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { query } from "@/lib/db";
 import {
   DEFAULT_TEMPLATES,
@@ -17,6 +20,8 @@ export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string; type: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const { id, type } = await params;
 

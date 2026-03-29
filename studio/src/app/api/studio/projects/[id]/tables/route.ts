@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { queryOne, queryProjectDb } from "@/lib/db";
 import { safeIdentifier, isSafeIdentifier } from "@/lib/sql-utils";
 import type { ApiResponse, TableInfo, CreateTableRequest } from "@/lib/types";
@@ -81,6 +84,8 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const { id } = await params;
     const dbName = await getDbName(id);

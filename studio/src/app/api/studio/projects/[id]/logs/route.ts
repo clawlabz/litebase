@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { query, queryOne } from "@/lib/db";
 import { logEvent } from "@/lib/logger";
 import type { ApiResponse } from "@/lib/types";
@@ -166,6 +169,8 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const { id } = await params;
 

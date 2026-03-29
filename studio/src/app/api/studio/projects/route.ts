@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { query, queryOne, metaPool } from "@/lib/db";
 import { generateProjectKeys } from "@/lib/jwt";
 import {
@@ -35,6 +38,8 @@ function validateProjectName(name: string): string | null {
 // ---------------------------------------------------------------------------
 
 export async function POST(request: Request) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const body = (await request.json()) as CreateProjectRequest;
     const { name, displayName } = body;

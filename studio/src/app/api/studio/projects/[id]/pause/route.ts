@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { queryOne } from "@/lib/db";
 import { stopProjectContainers } from "@/lib/docker";
 import type { ApiResponse, Project } from "@/lib/types";
@@ -11,6 +14,8 @@ export async function POST(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const { id } = await params;
     const project = await queryOne<Project>(

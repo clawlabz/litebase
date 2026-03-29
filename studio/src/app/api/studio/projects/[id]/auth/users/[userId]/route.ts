@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { queryOne, queryProjectDb } from "@/lib/db";
 import type {
   ApiResponse,
@@ -72,6 +75,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; userId: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "PATCH")) return viewerBlockedResponse();
   try {
     const { id, userId } = await params;
     const dbName = await getDbName(id);
@@ -149,6 +154,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string; userId: string }> },
 ) {
+  const role2 = getSessionRole(await cookies());
+  if (isViewerBlocked(role2, "DELETE")) return viewerBlockedResponse();
   try {
     const { id, userId } = await params;
     const dbName = await getDbName(id);

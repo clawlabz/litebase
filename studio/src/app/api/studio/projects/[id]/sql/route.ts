@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { viewerBlockedResponse } from "@/lib/demo";
 import { query, queryOne, createProjectPool } from "@/lib/db";
 import type { ApiResponse, Project } from "@/lib/types";
 
@@ -19,6 +22,8 @@ interface SqlResult {
 }
 
 const MAX_ROWS = 1000;
+
+const READ_ONLY_SQL_RE = /^(SELECT|WITH|EXPLAIN)\b/i;
 
 // ---------------------------------------------------------------------------
 // POST /api/studio/projects/[id]/sql — Execute SQL
@@ -44,6 +49,12 @@ export async function POST(
     }
 
     sqlText = body.sql.trim();
+
+    // Viewers can only execute read-only SQL
+    const role = getSessionRole(await cookies());
+    if (role === "viewer" && !READ_ONLY_SQL_RE.test(sqlText)) {
+      return viewerBlockedResponse();
+    }
 
     // Look up the project to get its database name
     const project = await queryOne<Project>(

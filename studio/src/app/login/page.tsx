@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 
 export default function LoginPage() {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (res.ok) {
@@ -36,13 +37,18 @@ export default function LoginPage() {
         router.refresh();
       } else {
         const data = await res.json();
-        setError(data.error ?? "Invalid password");
+        setError(data.error ?? "Invalid credentials");
       }
     } catch {
       setError("Failed to connect to server");
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleDemoLogin() {
+    setUsername("demo");
+    setPassword("demo123");
   }
 
   return (
@@ -54,18 +60,26 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-xl">LiteBase Studio</CardTitle>
           <CardDescription>
-            Enter your studio password to continue
+            Sign in to access the studio dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoFocus
+                autoComplete="username"
+              />
+              <Input
                 type="password"
-                placeholder="Studio password"
+                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoFocus
+                autoComplete="current-password"
                 required
               />
               {error && (
@@ -80,6 +94,15 @@ export default function LoginPage() {
               {loading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Try demo account (read-only)
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>

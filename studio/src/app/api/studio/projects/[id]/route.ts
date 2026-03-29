@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { query, queryOne, metaPool, createProjectPool } from "@/lib/db";
 import {
   removeProjectContainers,
@@ -100,6 +103,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "PATCH")) return viewerBlockedResponse();
   try {
     const { id } = await params;
     const body = (await request.json()) as UpdateProjectRequest;
@@ -160,6 +165,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const role2 = getSessionRole(await cookies());
+  if (isViewerBlocked(role2, "DELETE")) return viewerBlockedResponse();
   try {
     const { id } = await params;
     const project = await queryOne<Project>(

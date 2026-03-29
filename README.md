@@ -6,6 +6,8 @@ PostgreSQL + Auth + REST API + Admin Dashboard in a single `docker compose up`.
 
 > Supabase needs 13 containers and 2GB+ RAM. LiteBase needs 5 containers and ~340MB.
 
+**Live Demo**: [litebase.clawlabz.xyz](https://litebase.clawlabz.xyz) (login: `demo` / `demo123`, read-only)
+
 ## Quick Start
 
 ```bash

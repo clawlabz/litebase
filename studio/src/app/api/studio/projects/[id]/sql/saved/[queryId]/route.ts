@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { query } from "@/lib/db";
 import type { ApiResponse } from "@/lib/types";
 
@@ -10,6 +13,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string; queryId: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "DELETE")) return viewerBlockedResponse();
   try {
     const { id, queryId } = await params;
 

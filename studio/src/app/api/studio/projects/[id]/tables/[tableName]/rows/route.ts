@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionRole } from "@/lib/session";
+import { isViewerBlocked, viewerBlockedResponse } from "@/lib/demo";
 import { queryOne, queryProjectDb } from "@/lib/db";
 import { isSafeIdentifier, safeIdentifier } from "@/lib/sql-utils";
 import type { ApiResponse, PaginatedRows } from "@/lib/types";
@@ -101,6 +104,8 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string; tableName: string }> },
 ) {
+  const role = getSessionRole(await cookies());
+  if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const { id, tableName } = await params;
 
@@ -168,6 +173,8 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string; tableName: string }> },
 ) {
+  const role2 = getSessionRole(await cookies());
+  if (isViewerBlocked(role2, "PATCH")) return viewerBlockedResponse();
   try {
     const { id, tableName } = await params;
 
@@ -249,6 +256,8 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string; tableName: string }> },
 ) {
+  const role3 = getSessionRole(await cookies());
+  if (isViewerBlocked(role3, "DELETE")) return viewerBlockedResponse();
   try {
     const { id, tableName } = await params;
 
