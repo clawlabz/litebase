@@ -13,6 +13,8 @@ const metaPool = new Pool({
   max: 10,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
+  options: "-c search_path=litebase,public",
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
 });
 
 // ---------------------------------------------------------------------------
@@ -61,6 +63,7 @@ export function createProjectPool(dbName: string): Pool {
     max: 5,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 5_000,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
   });
 }
 
