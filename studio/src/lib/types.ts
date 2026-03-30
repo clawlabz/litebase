@@ -16,6 +16,8 @@ export interface Project {
   readonly postgrest_container_id: string | null;
   readonly gotrue_port: number;
   readonly postgrest_port: number;
+  readonly gotrue_url: string | null;
+  readonly postgrest_url: string | null;
   readonly status: ProjectStatus;
   readonly created_at: string;
   readonly updated_at: string;
@@ -32,6 +34,8 @@ export interface ProjectWithStats extends Project {
 export interface CreateProjectRequest {
   readonly name: string;
   readonly displayName: string;
+  readonly gotrueUrl?: string;
+  readonly postgrestUrl?: string;
 }
 
 export interface UpdateProjectRequest {

@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   if (isViewerBlocked(role, "POST")) return viewerBlockedResponse();
   try {
     const body = (await request.json()) as CreateProjectRequest;
-    const { name, displayName } = body;
+    const { name, displayName, gotrueUrl, postgrestUrl } = body;
 
     // 1. Validate
     const nameError = validateProjectName(name);
@@ -122,14 +122,21 @@ export async function POST(request: Request) {
     }
 
     // 7. Insert project record
+    // URLs default to localhost if not explicitly provided by the user.
+    // Users running Studio remotely (e.g. on Vercel) should supply the
+    // public-facing URLs so health checks and API access work correctly.
+    const resolvedGotrueUrl = gotrueUrl?.trim() || `http://localhost:${gotruePort}`;
+    const resolvedPostgrestUrl = postgrestUrl?.trim() || `http://localhost:${postgrestPort}`;
+
     const result = await queryOne<Project>(
       `INSERT INTO projects (
         name, display_name, database_name, jwt_secret,
         anon_key, service_role_key,
         gotrue_container_id, postgrest_container_id,
         gotrue_port, postgrest_port,
+        gotrue_url, postgrest_url,
         status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'active')
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'active')
       RETURNING *`,
       [
         name,
@@ -142,6 +149,8 @@ export async function POST(request: Request) {
         postgrestContainerId || null,
         gotruePort,
         postgrestPort,
+        resolvedGotrueUrl,
+        resolvedPostgrestUrl,
       ],
     );
 

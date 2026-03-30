@@ -41,6 +41,8 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
   const [displayName, setDisplayName] = useState("");
   const [name, setName] = useState("");
   const [nameManuallyEdited, setNameManuallyEdited] = useState(false);
+  const [gotrueUrl, setGotrueUrl] = useState("");
+  const [postgrestUrl, setPostgrestUrl] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdProject, setCreatedProject] = useState<Project | null>(null);
@@ -50,6 +52,8 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
     setDisplayName("");
     setName("");
     setNameManuallyEdited(false);
+    setGotrueUrl("");
+    setPostgrestUrl("");
     setCreating(false);
     setError(null);
     setCreatedProject(null);
@@ -76,7 +80,12 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
       const res = await fetch("/api/studio/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, displayName }),
+        body: JSON.stringify({
+          name,
+          displayName,
+          ...(gotrueUrl.trim() && { gotrueUrl: gotrueUrl.trim() }),
+          ...(postgrestUrl.trim() && { postgrestUrl: postgrestUrl.trim() }),
+        }),
       });
       const json = (await res.json()) as ApiResponse<Project>;
       if (!json.success) {
@@ -167,6 +176,41 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
                   Lowercase, alphanumeric, hyphens only. Used in database name
                   and container names.
                 </p>
+              </div>
+
+              <div className="space-y-3 rounded-md border border-border/50 bg-muted/30 p-3">
+                <p className="text-xs font-medium text-muted-foreground">
+                  Service URLs{" "}
+                  <span className="font-normal">(optional — defaults to localhost)</span>
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  If your Studio runs remotely (e.g. Vercel), set the public URLs
+                  so health checks and API access work correctly.
+                </p>
+                <div className="space-y-1.5">
+                  <label htmlFor="gotrueUrl" className="text-xs font-medium">
+                    Auth URL (GoTrue)
+                  </label>
+                  <Input
+                    id="gotrueUrl"
+                    placeholder="https://auth.example.com"
+                    value={gotrueUrl}
+                    onChange={(e) => setGotrueUrl((e.target as HTMLInputElement).value)}
+                    className="font-mono text-xs"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="postgrestUrl" className="text-xs font-medium">
+                    API URL (PostgREST)
+                  </label>
+                  <Input
+                    id="postgrestUrl"
+                    placeholder="https://api.example.com"
+                    value={postgrestUrl}
+                    onChange={(e) => setPostgrestUrl((e.target as HTMLInputElement).value)}
+                    className="font-mono text-xs"
+                  />
+                </div>
               </div>
 
               {error && (

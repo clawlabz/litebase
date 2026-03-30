@@ -259,10 +259,12 @@ export async function GET(
       database_name: string;
       gotrue_port: number;
       postgrest_port: number;
+      gotrue_url: string | null;
+      postgrest_url: string | null;
       gotrue_container_id: string | null;
       postgrest_container_id: string | null;
     }>(
-      "SELECT database_name, gotrue_port, postgrest_port, gotrue_container_id, postgrest_container_id FROM projects WHERE id = $1",
+      "SELECT database_name, gotrue_port, postgrest_port, gotrue_url, postgrest_url, gotrue_container_id, postgrest_container_id FROM projects WHERE id = $1",
       [id],
     );
 
@@ -279,18 +281,12 @@ export async function GET(
     const [dbHealth, authHealth, apiHealth, dbStats, authStats, activityStats] =
       await Promise.all([
         getDatabaseHealth(dbName),
-        project.gotrue_container_id
-          ? pingService(`http://localhost:${project.gotrue_port}/health`)
-          : Promise.resolve({
-              status: "not_configured" as const,
-              latency_ms: 0,
-            }),
-        project.postgrest_container_id
-          ? pingService(`http://localhost:${project.postgrest_port}/`)
-          : Promise.resolve({
-              status: "not_configured" as const,
-              latency_ms: 0,
-            }),
+        project.gotrue_url
+          ? pingService(`${project.gotrue_url}/health`)
+          : Promise.resolve({ status: "not_configured" as const, latency_ms: 0 }),
+        project.postgrest_url
+          ? pingService(`${project.postgrest_url}/`)
+          : Promise.resolve({ status: "not_configured" as const, latency_ms: 0 }),
         getDatabaseStats(dbName),
         getAuthStats(dbName),
         getActivityStats(dbName),
