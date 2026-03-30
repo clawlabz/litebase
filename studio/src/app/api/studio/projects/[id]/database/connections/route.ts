@@ -47,8 +47,8 @@ export async function GET(
     const connections: ConnectionInfo = {
       direct_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:${pgPort}/${project.database_name}`,
       pooled_url: `postgresql://${pgUser}:${pgPassword}@${pgHost}:6432/${project.database_name}`,
-      api_url: `http://localhost:${project.postgrest_port}`,
-      auth_url: `http://localhost:${project.gotrue_port}`,
+      api_url: project.postgrest_url ?? `http://localhost:${project.postgrest_port}`,
+      auth_url: project.gotrue_url ?? `http://localhost:${project.gotrue_port}`,
       anon_key: project.anon_key,
       service_role_key: project.service_role_key,
       jwt_secret: project.jwt_secret,

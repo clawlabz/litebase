@@ -40,6 +40,7 @@ export interface ProjectContainerConfig {
   readonly jwtSecret: string;
   readonly gotruePort: number;
   readonly postgrestPort: number;
+  readonly gotrueUrl?: string;
 }
 
 export type ContainerStatus = "running" | "stopped" | "not_found";
@@ -117,7 +118,7 @@ export async function createProjectContainers(
 
   const dbUrl = buildDbUrl(config.dbName);
   const siteUrl = process.env.GOTRUE_SITE_URL ?? "http://localhost:3000";
-  const apiExternalUrl = `http://localhost:${config.gotruePort}`;
+  const apiExternalUrl = config.gotrueUrl ?? `http://localhost:${config.gotruePort}`;
 
   // --- GoTrue container ---
   const gotrue = await docker.createContainer({

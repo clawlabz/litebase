@@ -68,8 +68,8 @@ export async function POST(
     const subject = custom?.subject ?? DEFAULT_TEMPLATES[templateType].subject;
     const html = custom?.html ?? DEFAULT_TEMPLATES[templateType].html;
 
-    // Determine site URL
-    const siteUrl = `http://localhost:${project.gotrue_port}`;
+    // Determine site URL — use stored public URL if available, fall back to localhost
+    const siteUrl = project.gotrue_url ?? `http://localhost:${project.gotrue_port}`;
 
     // Replace variables with sample data
     const renderedHtml = replaceTemplateVariables(html, siteUrl);

@@ -106,6 +106,7 @@ export async function POST(request: Request) {
         jwtSecret,
         gotruePort,
         postgrestPort,
+        gotrueUrl: resolvedGotrueUrl,
       });
       gotrueContainerId = containers.gotrueContainerId;
       postgrestContainerId = containers.postgrestContainerId;

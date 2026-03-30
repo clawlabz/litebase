@@ -254,13 +254,13 @@ export function CreateProjectDialog({ onCreated }: CreateProjectDialogProps) {
             <div className="space-y-3 py-2">
               <ConnectionField
                 label="API URL"
-                value={`http://localhost:${createdProject.postgrest_port}`}
+                value={createdProject.postgrest_url ?? `http://localhost:${createdProject.postgrest_port}`}
                 copied={copiedField === "api_url"}
                 onCopy={(v) => handleCopy("api_url", v)}
               />
               <ConnectionField
                 label="Auth URL"
-                value={`http://localhost:${createdProject.gotrue_port}`}
+                value={createdProject.gotrue_url ?? `http://localhost:${createdProject.gotrue_port}`}
                 copied={copiedField === "auth_url"}
                 onCopy={(v) => handleCopy("auth_url", v)}
               />

@@ -147,7 +147,7 @@ export async function GET(
       description: descMap.get(t.table_name) ?? null,
     }));
 
-    const apiUrl = `http://localhost:${project.postgrest_port}`;
+    const apiUrl = project.postgrest_url ?? `http://localhost:${project.postgrest_port}`;
 
     const payload: ApiDocsPayload = {
       tables,
