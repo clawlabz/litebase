@@ -163,10 +163,16 @@ export async function POST(request: Request) {
 // GET /api/studio/projects — list all projects
 // ---------------------------------------------------------------------------
 
-export async function GET() {
+const DEMO_PROJECT_NAME = process.env.LITEBASE_DEMO_PROJECT ?? "demo-app";
+
+export async function GET(request: Request) {
+  const role = getSessionRole(await cookies());
   try {
     const result = await query<Project>(
-      "SELECT * FROM projects ORDER BY created_at DESC",
+      role === "viewer"
+        ? "SELECT * FROM projects WHERE name = $1 ORDER BY created_at DESC"
+        : "SELECT * FROM projects ORDER BY created_at DESC",
+      role === "viewer" ? [DEMO_PROJECT_NAME] : [],
     );
 
     // Enrich with stats + container status
