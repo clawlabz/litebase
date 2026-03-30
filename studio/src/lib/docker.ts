@@ -1,10 +1,33 @@
 import Docker from "dockerode";
 
 // ---------------------------------------------------------------------------
-// Docker client — connects to the local Docker daemon
+// Docker client
+//
+// Local (default):  connects via Unix socket — used when running on the same
+//                   host as the Docker daemon (e.g. self-hosted on Hetzner).
+//
+// Remote TLS:       connects via TCP with mutual TLS — used when Studio runs
+//                   on a remote host such as Vercel.  Set these env vars:
+//                     DOCKER_HOST        IP or hostname of the Docker daemon
+//                     DOCKER_CA_CERT     PEM content of the CA certificate
+//                     DOCKER_CLIENT_CERT PEM content of the client certificate
+//                     DOCKER_CLIENT_KEY  PEM content of the client private key
 // ---------------------------------------------------------------------------
 
-const docker = new Docker({ socketPath: "/var/run/docker.sock" });
+const docker =
+  process.env.DOCKER_HOST &&
+  process.env.DOCKER_CA_CERT &&
+  process.env.DOCKER_CLIENT_CERT &&
+  process.env.DOCKER_CLIENT_KEY
+    ? new Docker({
+        host: process.env.DOCKER_HOST,
+        port: 2376,
+        protocol: "https",
+        ca: process.env.DOCKER_CA_CERT.replace(/\\n/g, "\n"),
+        cert: process.env.DOCKER_CLIENT_CERT.replace(/\\n/g, "\n"),
+        key: process.env.DOCKER_CLIENT_KEY.replace(/\\n/g, "\n"),
+      })
+    : new Docker({ socketPath: "/var/run/docker.sock" });
 
 // ---------------------------------------------------------------------------
 // Types

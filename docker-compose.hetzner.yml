@@ -1,0 +1,52 @@
+# Hetzner standalone compose — only runs LiteBase Studio.
+# Reuses the existing PostgreSQL 16 instance on the host (127.0.0.1:5432).
+# GoTrue/PostgREST project containers connect via Docker bridge gateway (172.17.0.1).
+#
+# Usage:
+#   docker compose -f docker-compose.hetzner.yml up -d
+#   docker compose -f docker-compose.hetzner.yml logs -f studio
+
+services:
+  studio:
+    build:
+      context: ./studio
+      dockerfile: Dockerfile
+    container_name: litebase-studio
+    restart: unless-stopped
+    ports:
+      - "${STUDIO_PORT:-3001}:3000"
+    environment:
+      # Point to host PG 16 via Docker bridge gateway
+      DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@172.17.0.1:${PG_PORT:-5432}/${PG_DB:-litebase_meta}
+      DIRECT_DATABASE_URL: postgres://${PG_USER}:${PG_PASSWORD}@172.17.0.1:${PG_PORT:-5432}/${PG_DB:-litebase_meta}
+      # These are passed to GoTrue/PostgREST containers when a project is created
+      PG_HOST: "172.17.0.1"
+      PG_PORT: "${PG_PORT:-5432}"
+      PG_USER: "${PG_USER}"
+      PG_PASSWORD: "${PG_PASSWORD}"
+      # Auth
+      JWT_SECRET: "${JWT_SECRET}"
+      STUDIO_PASSWORD: "${STUDIO_PASSWORD}"
+      # SMTP
+      SMTP_HOST: "${SMTP_HOST:-}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USER: "${SMTP_USER:-}"
+      SMTP_PASS: "${SMTP_PASS:-}"
+      SMTP_FROM: "${SMTP_FROM:-noreply@localhost}"
+      SMTP_FROM_NAME: "${SMTP_FROM_NAME:-LiteBase}"
+      # GoTrue site URL for project containers
+      GOTRUE_SITE_URL: "${GOTRUE_SITE_URL:-https://arena.clawlabz.xyz}"
+    group_add:
+      - "110"  # docker group GID on host — grants access to /var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - litebase_project_data:/app/data
+
+volumes:
+  litebase_project_data:
+    driver: local
+
+networks:
+  default:
+    name: litebase
+    external: true
