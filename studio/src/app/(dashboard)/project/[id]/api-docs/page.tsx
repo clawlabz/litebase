@@ -91,7 +91,7 @@ export default function ApiDocsPage() {
     }
   };
 
-  const initCode = `import { createClient } from '@supabase/supabase-js'
+  const initCode = `import { createClient } from '@supabase/supabase-js  // Works with LiteBase'
 
 const supabaseUrl = '${data.api_url}'
 const supabaseKey = '${data.anon_key}'
@@ -165,7 +165,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)`;
 
             <div>
               <h3 className="text-sm font-medium mb-2">
-                Initialize the Supabase Client
+                Initialize the Client
               </h3>
               <CodeBlock code={initCode} language="javascript" />
             </div>

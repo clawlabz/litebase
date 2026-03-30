@@ -177,7 +177,7 @@ export function ConnectionTab({ projectId }: ConnectionTabProps) {
     );
   }
 
-  const usageCode = `import { createClient } from '@supabase/supabase-js'
+  const usageCode = `import { createClient } from '@supabase/supabase-js  // Works with LiteBase'
 
 const supabase = createClient(
   '${info.api_url}',
