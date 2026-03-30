@@ -95,6 +95,12 @@ export async function POST(request: Request) {
       await projectPool.end();
     }
 
+    // URLs default to localhost if not explicitly provided by the user.
+    // Users running Studio remotely (e.g. on Vercel) should supply the
+    // public-facing URLs so health checks and API access work correctly.
+    const resolvedGotrueUrl = gotrueUrl?.trim() || `http://localhost:${gotruePort}`;
+    const resolvedPostgrestUrl = postgrestUrl?.trim() || `http://localhost:${postgrestPort}`;
+
     // 6. Create Docker containers
     let gotrueContainerId = "";
     let postgrestContainerId = "";
@@ -123,11 +129,6 @@ export async function POST(request: Request) {
     }
 
     // 7. Insert project record
-    // URLs default to localhost if not explicitly provided by the user.
-    // Users running Studio remotely (e.g. on Vercel) should supply the
-    // public-facing URLs so health checks and API access work correctly.
-    const resolvedGotrueUrl = gotrueUrl?.trim() || `http://localhost:${gotruePort}`;
-    const resolvedPostgrestUrl = postgrestUrl?.trim() || `http://localhost:${postgrestPort}`;
 
     const result = await queryOne<Project>(
       `INSERT INTO projects (

@@ -43,8 +43,9 @@ export async function GET(
       anon_key: string;
       service_role_key: string;
       postgrest_port: number;
+      postgrest_url: string | null;
     }>(
-      "SELECT database_name, anon_key, service_role_key, postgrest_port FROM projects WHERE id = $1",
+      "SELECT database_name, anon_key, service_role_key, postgrest_port, postgrest_url FROM projects WHERE id = $1",
       [id],
     );
 
