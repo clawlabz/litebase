@@ -23,7 +23,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-RUN pnpm run build
+RUN ./node_modules/.bin/next build
 
 # ── Stage 3: Production ─────────────────────────────────────────────────────
 FROM node:22-alpine AS runner
