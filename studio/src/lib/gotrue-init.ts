@@ -26,11 +26,17 @@ BEGIN
 END
 $$;
 
--- Grant roles to postgres so it can SET ROLE
-GRANT anon TO postgres;
-GRANT authenticated TO postgres;
-GRANT service_role TO postgres;
-GRANT supabase_auth_admin TO postgres;
+-- Grant roles to the database owner so it can SET ROLE. Self-hosted
+-- installations commonly use a non-postgres owner (for example
+-- story_litebase), so do not assume the upstream postgres role exists.
+DO $$
+BEGIN
+  EXECUTE format('GRANT anon TO %I', current_user);
+  EXECUTE format('GRANT authenticated TO %I', current_user);
+  EXECUTE format('GRANT service_role TO %I', current_user);
+  EXECUTE format('GRANT supabase_auth_admin TO %I', current_user);
+END
+$$;
 
 -- ============================================================
 -- Schema
